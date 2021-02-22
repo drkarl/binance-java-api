@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.concurrent.TimeUnit;
 
+import static com.binance.api.client.config.NetType.SPOT;
+
 /**
  * Generates a Binance API implementation based on @see {@link BinanceApiService}.
  */
@@ -42,19 +44,23 @@ public class BinanceApiServiceGenerator {
                     BinanceApiError.class, new Annotation[0], null);
 
     public static <S> S createService(Class<S> serviceClass) {
-        return createService(serviceClass, null, null);
+        return createService(serviceClass, new BinanceApiConfig(null, null, SPOT));
     }
 
     public static <S> S createService(Class<S> serviceClass, String apiKey, String secret) {
+       return createService(serviceClass, new BinanceApiConfig(apiKey, secret, SPOT));
+    }
+
+    public static <S> S createService(Class<S> serviceClass, BinanceApiConfig apiConfig) {
         Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
-                .baseUrl(BinanceApiConfig.getApiBaseUrl())
+                .baseUrl(apiConfig.getApiBaseUrl())
                 .addConverterFactory(converterFactory);
 
-        if (StringUtils.isEmpty(apiKey) || StringUtils.isEmpty(secret)) {
+        if (StringUtils.isEmpty(apiConfig.getApiKey()) || StringUtils.isEmpty(apiConfig.getSecret())) {
             retrofitBuilder.client(sharedClient);
         } else {
             // `adaptedClient` will use its own interceptor, but share thread pool etc with the 'parent' client
-            AuthenticationInterceptor interceptor = new AuthenticationInterceptor(apiKey, secret);
+            AuthenticationInterceptor interceptor = new AuthenticationInterceptor(apiConfig.getApiKey(), apiConfig.getSecret());
             OkHttpClient adaptedClient = sharedClient.newBuilder().addInterceptor(interceptor).build();
             retrofitBuilder.client(adaptedClient);
         }

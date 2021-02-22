@@ -21,9 +21,11 @@ import static com.binance.api.client.impl.BinanceApiServiceGenerator.executeSync
 public class BinanceApiRestClientImpl implements BinanceApiRestClient {
 
   private final BinanceApiService binanceApiService;
+  private final BinanceApiConfig binanceApiConfig;
 
-  public BinanceApiRestClientImpl(String apiKey, String secret) {
-    binanceApiService = createService(BinanceApiService.class, apiKey, secret);
+  public BinanceApiRestClientImpl(BinanceApiConfig apiConfig) {
+    binanceApiService = createService(BinanceApiService.class, apiConfig);
+    binanceApiConfig = apiConfig;
   }
 
   // General endpoints
@@ -45,7 +47,7 @@ public class BinanceApiRestClientImpl implements BinanceApiRestClient {
 
   @Override
   public List<Asset> getAllAssets() {
-    return executeSync(binanceApiService.getAllAssets(BinanceApiConfig.getAssetInfoApiBaseUrl() + "assetWithdraw/getAllAsset.html"));
+    return executeSync(binanceApiService.getAllAssets(binanceApiConfig.getAssetInfoApiBaseUrl() + "assetWithdraw/getAllAsset.html"));
   }
 
   // Market Data endpoints

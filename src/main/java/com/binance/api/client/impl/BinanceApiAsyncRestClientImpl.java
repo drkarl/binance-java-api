@@ -41,9 +41,11 @@ import static com.binance.api.client.impl.BinanceApiServiceGenerator.createServi
 public class BinanceApiAsyncRestClientImpl implements BinanceApiAsyncRestClient {
 
   private final BinanceApiService binanceApiService;
+  private final BinanceApiConfig binanceApiConfig;
 
-  public BinanceApiAsyncRestClientImpl(String apiKey, String secret) {
-    binanceApiService = createService(BinanceApiService.class, apiKey, secret);
+  public BinanceApiAsyncRestClientImpl(BinanceApiConfig apiConfig) {
+    binanceApiService = createService(BinanceApiService.class, apiConfig);
+    binanceApiConfig = apiConfig;
   }
 
   // General endpoints
@@ -65,7 +67,7 @@ public class BinanceApiAsyncRestClientImpl implements BinanceApiAsyncRestClient 
 
   @Override
   public void getAllAssets(BinanceApiCallback<List<Asset>> callback) {
-    binanceApiService.getAllAssets(BinanceApiConfig.getAssetInfoApiBaseUrl() + "assetWithdraw/getAllAsset.html")
+    binanceApiService.getAllAssets(binanceApiConfig.getAssetInfoApiBaseUrl() + "assetWithdraw/getAllAsset.html")
         .enqueue(new BinanceApiCallbackAdapter<>(callback));
   }
 
